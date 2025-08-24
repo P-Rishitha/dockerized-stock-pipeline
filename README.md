@@ -36,6 +36,11 @@ This will:
 - Start Airflow Webserver on port 8080 (http://localhost:8080)
    - Username: ```admin``` | Password: ```admin```
 - Enable and trigger the DAG ```stock_data_pipeline``` in Airflow UI.
+4. Trigger the DAG
+  - Login to Airflow
+  - Enable & trigger the DAG → ```stock_data_pipeline```
+  - Or wait for it to run on schedule (daily)
+
 ---
 
 ### Check Data
