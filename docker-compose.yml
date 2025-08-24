@@ -1,8 +1,9 @@
-version: "3.8"
+version: '3.8'
 services:
   postgres:
     image: postgres:13
     container_name: postgres
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -12,24 +13,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   airflow:
-    build: ./airflow
+    build: .
     container_name: airflow
+    restart: always
     depends_on:
       - postgres
     environment:
-      - LOAD_EX=n
-      - EXECUTOR=Local
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://postgres:postgres@postgres:5432/stocks
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/scripts:/opt/airflow/scripts
     ports:
       - "8080:8080"
-    volumes:
-      - ./airflow/dags:/usr/local/airflow/dags
-      - ./airflow/scripts:/usr/local/airflow/scripts
-      - ./airflow/requirements.txt:/requirements.txt
     command: >
-      bash -c "pip install -r /requirements.txt &&
-               airflow db init &&
-               airflow users create --username admin --password admin --firstname admin --lastname user --role Admin --email admin@example.com &&
-               airflow webserver -p 8080 & airflow scheduler"
-
+      bash -c "
+      airflow db init &&
+      airflow users create --username admin --firstname admin --lastname user --role Admin --email admin@example.com --password admin &&
+      airflow webserver & airflow scheduler
+      "
 volumes:
   postgres_data:
